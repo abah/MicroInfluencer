@@ -1,0 +1,170 @@
+{% extends "core/base.html" %}
+{% load i18n %}
+{% load account socialaccount %}
+
+{% block title %}Login - MicroInfluencer{% endblock %}
+
+{% block content %}
+<section class="login-section py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-5 col-md-7">
+                <div class="login-card">
+                    <div class="text-center mb-4">
+                        <h1 class="login-title">
+                            <i class="fas fa-chart-line text-primary me-2"></i>
+                            MicroInfluencer
+                        </h1>
+                        <p class="login-subtitle">Selamat datang kembali!</p>
+                    </div>
+
+                    <form class="login-form" method="POST" action="{% url 'account_login' %}">
+                        {% csrf_token %}
+                        
+                        {% if form.errors %}
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            Email atau password salah. Silakan coba lagi.
+                        </div>
+                        {% endif %}
+                        
+                        <div class="form-group mb-3">
+                            <label class="form-label">Email</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-envelope"></i>
+                                </span>
+                                {{ form.login }}
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <label class="form-label">Password</label>
+                                <a href="{% url 'account_reset_password' %}" class="text-primary text-decoration-none small">
+                                    Lupa password?
+                                </a>
+                            </div>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-lock"></i>
+                                </span>
+                                {{ form.password }}
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <div class="form-check">
+                                {{ form.remember }}
+                                <label class="form-check-label" for="id_remember">
+                                    Ingat saya
+                                </label>
+                            </div>
+                        </div>
+
+                        {% if redirect_field_value %}
+                        <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+                        {% endif %}
+
+                        <button class="btn btn-primary w-100 mb-3" type="submit">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login
+                        </button>
+
+                        <p class="text-center mb-0">
+                            Belum punya akun? 
+                            <a href="{% url 'signup' %}" class="text-primary text-decoration-none">
+                                Daftar sekarang
+                            </a>
+                        </p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.login-section {
+    min-height: calc(100vh - 200px);
+    display: flex;
+    align-items: center;
+}
+
+.login-card {
+    background: var(--surface-color);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+    box-shadow: var(--shadow-lg);
+}
+
+.login-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.login-subtitle {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+}
+
+.login-form .form-control {
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+}
+
+.login-form .input-group-text {
+    background: transparent;
+    border: 2px solid var(--border-color);
+    border-right: none;
+    color: var(--text-secondary);
+}
+
+.login-form .form-control {
+    border-left: none;
+}
+
+.login-form .input-group:focus-within {
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.login-form .input-group:focus-within .input-group-text,
+.login-form .input-group:focus-within .form-control {
+    border-color: var(--primary-color);
+}
+
+.login-form .form-label {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.login-form .btn-primary {
+    padding: 0.75rem;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.login-form .form-check-label {
+    color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+    .login-card {
+        padding: 2rem;
+    }
+    
+    .login-title {
+        font-size: 1.75rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .login-card {
+        padding: 1.5rem;
+    }
+}
+</style>
+{% endblock %} 

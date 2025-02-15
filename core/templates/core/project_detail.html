@@ -1,0 +1,462 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load project_filters %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ project.title }} - MicroInfluencer{% endblock %}
+
+{% block extra_css %}
+<style>
+    .project-header {
+        background: var(--ig-gradient);
+        color: white;
+        padding: 3rem 2rem;
+        border-radius: 0 0 2rem 2rem;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .project-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.2);
+        z-index: 1;
+    }
+
+    .project-header > * {
+        position: relative;
+        z-index: 2;
+    }
+
+    .project-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .project-meta {
+        background: var(--card-bg);
+        border-radius: 1rem;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--card-shadow);
+    }
+
+    .project-info {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        margin-top: 1.5rem;
+    }
+
+    .project-info-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1.1rem;
+    }
+
+    .notification-banner {
+        background: var(--card-bg);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--card-shadow);
+        border-left: 4px solid var(--ig-primary);
+    }
+
+    .notification-banner.success {
+        border-left-color: var(--success-color);
+    }
+
+    .notification-banner.warning {
+        border-left-color: var(--warning-color);
+    }
+
+    .notification-banner.danger {
+        border-left-color: var(--danger-color);
+    }
+
+    .notification-content {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .notification-icon {
+        font-size: 1.5rem;
+        color: var(--ig-primary);
+    }
+
+    .notification-banner.success .notification-icon {
+        color: var(--success-color);
+    }
+
+    .notification-banner.warning .notification-icon {
+        color: var(--warning-color);
+    }
+
+    .notification-banner.danger .notification-icon {
+        color: var(--danger-color);
+    }
+
+    .notification-text {
+        flex: 1;
+    }
+
+    .notification-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--text-primary);
+    }
+
+    .notification-message {
+        color: var(--text-secondary);
+        margin: 0;
+    }
+
+    .collaboration-section {
+        background: var(--card-bg);
+        border-radius: 1rem;
+        padding: 2rem;
+        margin-top: 2rem;
+        box-shadow: var(--card-shadow);
+    }
+
+    .collaboration-card {
+        background: var(--background-color);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+        border: 1px solid var(--border-color);
+    }
+
+    .collaboration-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--card-shadow);
+    }
+
+    .status-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        font-weight: 600;
+        font-size: 0.875rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .status-badge i {
+        font-size: 0.75rem;
+    }
+
+    .badge-pending {
+        background: var(--ig-yellow);
+        color: var(--text-primary);
+    }
+
+    .badge-approved {
+        background: var(--success-color);
+        color: white;
+    }
+
+    .badge-rejected {
+        background: var(--danger-color);
+        color: white;
+    }
+
+    .badge-in-progress {
+        background: var(--ig-primary);
+        color: white;
+    }
+
+    .badge-completed {
+        background: var(--ig-purple);
+        color: white;
+    }
+
+    .badge-cancelled {
+        background: var(--text-secondary);
+        color: white;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+
+    .btn-approve {
+        background: var(--success-color);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-reject {
+        background: var(--danger-color);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--hover-shadow);
+        opacity: 0.9;
+    }
+
+    .description-card {
+        background: var(--card-bg);
+        border-radius: 1rem;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--card-shadow);
+    }
+
+    .description-card h5 {
+        color: var(--text-primary);
+        font-weight: 600;
+        margin-bottom: 1rem;
+        font-size: 1.25rem;
+    }
+
+    .description-card p {
+        color: var(--text-secondary);
+        line-height: 1.6;
+        margin-bottom: 0;
+    }
+
+    .selected-influencer {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: var(--background-color);
+        border-radius: 0.5rem;
+    }
+
+    .selected-influencer img {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .selected-influencer span {
+        font-weight: 500;
+        color: var(--text-primary);
+    }
+
+    @media (max-width: 768px) {
+        .project-header {
+            padding: 2rem 1rem;
+        }
+
+        .project-title {
+            font-size: 2rem;
+        }
+
+        .project-info {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="project-header">
+    <div class="container">
+        {% if user.is_authenticated %}
+            {% if user == project.advertiser %}
+                <div class="notification-banner {% if project.status == 'COMPLETED' %}success{% elif project.status == 'IN_PROGRESS' %}warning{% elif project.status == 'CANCELLED' %}danger{% endif %}">
+                    <div class="notification-content">
+                        <i class="fas {% if project.status == 'COMPLETED' %}fa-check-circle{% elif project.status == 'IN_PROGRESS' %}fa-clock{% elif project.status == 'CANCELLED' %}fa-times-circle{% else %}fa-info-circle{% endif %} notification-icon"></i>
+                        <div class="notification-text">
+                            <div class="notification-title">Status Project</div>
+                            <p class="notification-message">{{ project|get_advertiser_collab_status }}</p>
+                        </div>
+                    </div>
+                </div>
+            {% elif user.role == 'INFLUENCER' %}
+                {% if user_collaboration %}
+                    <div class="notification-banner {% if user_collaboration.status == 'REJECTED' %}danger{% elif user_collaboration.status == 'APPROVED' %}success{% elif user_collaboration.status == 'IN_PROGRESS' %}warning{% endif %}">
+                        <div class="notification-content">
+                            <i class="fas {% if user_collaboration.status == 'REJECTED' %}fa-times-circle{% elif user_collaboration.status == 'APPROVED' %}fa-check-circle{% elif user_collaboration.status == 'IN_PROGRESS' %}fa-clock{% else %}fa-info-circle{% endif %} notification-icon"></i>
+                            <div class="notification-text">
+                                <div class="notification-title">Status Aplikasi Anda</div>
+                                {% if user_collaboration.status == 'PENDING' %}
+                                    <p class="notification-message">Aplikasi Anda sedang menunggu review dari advertiser. Kami akan memberi tahu Anda jika ada update.</p>
+                                {% elif user_collaboration.status == 'APPROVED' %}
+                                    <p class="notification-message">Selamat! Aplikasi Anda telah diterima. Silakan mulai mengerjakan project sesuai dengan persyaratan yang telah ditentukan.</p>
+                                {% elif user_collaboration.status == 'IN_PROGRESS' %}
+                                    <p class="notification-message">Project sedang dalam pengerjaan. Pastikan untuk menyelesaikan sesuai dengan tenggat waktu yang ditentukan.</p>
+                                {% elif user_collaboration.status == 'COMPLETED' %}
+                                    <p class="notification-message">Project telah selesai. Terima kasih atas kolaborasi Anda!</p>
+                                {% elif user_collaboration.status == 'REJECTED' %}
+                                    <p class="notification-message">Maaf, aplikasi Anda telah ditolak oleh advertiser. Silakan coba project lain yang sesuai dengan profil Anda.</p>
+                                {% elif user_collaboration.status == 'CANCELLED' %}
+                                    <p class="notification-message">Project ini telah dibatalkan.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    {% if project.status == 'PENDING' %}
+                        <div class="notification-banner info">
+                            <div class="notification-content">
+                                <i class="fas fa-info-circle notification-icon"></i>
+                                <div class="notification-text">
+                                    <div class="notification-title">Tertarik dengan Project Ini?</div>
+                                    <p class="notification-message">Anda belum mengajukan aplikasi untuk project ini. Jika tertarik, silakan ajukan aplikasi Anda sekarang.</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+        {% endif %}
+
+        <h1 class="project-title">{{ project.title }}</h1>
+        <div class="project-info">
+            <div class="project-info-item">
+                <i class="fas fa-dollar-sign"></i>
+                <span>{{ project.budget|format_currency }}</span>
+            </div>
+            <div class="project-info-item">
+                <i class="fas fa-calendar"></i>
+                <span>{{ project.deadline|date:"d F Y" }}</span>
+            </div>
+            <div class="project-info-item">
+                <span class="status-badge {{ project.status|get_status_class }}">
+                    <i class="fas fa-circle"></i>
+                    {{ project|get_status_display }}
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container my-4">
+    <div class="row">
+        <div class="col-md-8">
+            {% if not user.is_authenticated %}
+                <div class="notification-banner warning">
+                    <div class="notification-content">
+                        <i class="fas fa-info-circle notification-icon"></i>
+                        <div class="notification-text">
+                            <p class="notification-message mb-0">Silakan <a href="{% url 'account_login' %}">login</a> sebagai influencer untuk mengajukan aplikasi.</p>
+                        </div>
+                    </div>
+                </div>
+            {% elif user.is_authenticated and user.role != 'INFLUENCER' %}
+                <div class="notification-banner warning">
+                    <div class="notification-content">
+                        <i class="fas fa-info-circle notification-icon"></i>
+                        <div class="notification-text">
+                            <p class="notification-message mb-0">Hanya akun influencer yang dapat mengajukan aplikasi untuk project.</p>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="description-card">
+                <h5><i class="fas fa-file-alt me-2"></i>Deskripsi Project</h5>
+                <p>{{ project.description }}</p>
+            </div>
+
+            <div class="description-card">
+                <h5><i class="fas fa-list-check me-2"></i>Persyaratan</h5>
+                <p>{{ project.requirements }}</p>
+            </div>
+
+            {% if project.status == 'IN_PROGRESS' and project.selected_influencer %}
+                <div class="description-card">
+                    <h5><i class="fas fa-user-check me-2"></i>Influencer Terpilih</h5>
+                    <div class="selected-influencer">
+                        <img src="{{ project.selected_influencer.profile_picture.url }}" alt="Profile picture">
+                        <span>{{ project.selected_influencer.user.get_full_name }}</span>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="col-md-4">
+            {% if user.is_authenticated and user.role == 'INFLUENCER' and project|can_apply:user %}
+                <div class="description-card text-center">
+                    <h5>Tertarik dengan project ini?</h5>
+                    <form method="post" action="{% url 'apply_project' project.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-paper-plane me-2"></i>Ajukan Aplikasi
+                        </button>
+                    </form>
+                </div>
+            {% endif %}
+
+            {% if user.is_authenticated and user == project.advertiser %}
+                <div class="description-card">
+                    <h5><i class="fas fa-users me-2"></i>Aplikasi Influencer</h5>
+                    {% for collab in project.collaborations.all %}
+                        <div class="collaboration-card">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h5 class="mb-1">{{ collab.influencer.get_full_name }}</h5>
+                                    <p class="text-muted mb-2">
+                                        <small>
+                                            <i class="far fa-calendar me-2"></i>Mengajukan pada: {{ collab.created_at|date }}
+                                        </small>
+                                    </p>
+                                </div>
+                                <span class="status-badge badge-{{ collab.status|lower }}">
+                                    <i class="fas fa-circle"></i>
+                                    {{ collab.get_status_display }}
+                                </span>
+                            </div>
+                            
+                            {% if collab.status == 'PENDING' %}
+                                <div class="action-buttons">
+                                    <form method="post" action="{% url 'update_collaboration_status' collab.id 'APPROVED' %}" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-approve">
+                                            <i class="fas fa-check me-2"></i>Terima
+                                        </button>
+                                    </form>
+                                    <form method="post" action="{% url 'update_collaboration_status' collab.id 'REJECTED' %}" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-reject">
+                                            <i class="fas fa-times me-2"></i>Tolak
+                                        </button>
+                                    </form>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% empty %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-users-slash fa-3x mb-3 text-muted"></i>
+                            <p class="text-muted">Belum ada influencer yang mengajukan aplikasi.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

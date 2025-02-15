@@ -1,0 +1,133 @@
+---
+description: 
+globs: 
+---
+# Aturan Aplikasi MicroInfluencer
+
+## 1. Aturan Umum
+
+### Pengguna
+- Setiap pengguna harus memverifikasi email sebelum dapat menggunakan platform
+- Pengguna harus memilih peran sebagai Influencer atau Advertiser saat mendaftar
+- Satu akun email hanya bisa memiliki satu peran
+- Profil harus dilengkapi sebelum dapat menggunakan fitur utama
+
+### Keamanan
+- Password minimal 8 karakter dengan kombinasi huruf dan angka
+- Login dibatasi maksimal 5 kali percobaan dalam 15 menit
+- Session akan berakhir setelah 2 jam tidak aktif
+- Data sensitif seperti password dan API key harus dienkripsi
+
+## 2. Aturan Influencer
+
+### Profil
+- Wajib mengisi:
+  - Jumlah follower
+  - Niche/kategori konten
+  - Bio/deskripsi
+- Direkomendasikan mengisi:
+  - Link portfolio
+  - Engagement rate
+  - Platform sosial media
+
+### Aplikasi Proyek
+- Satu influencer hanya bisa mengajukan satu aplikasi per proyek
+- Proposal minimal 20 kata
+- Tidak bisa mengajukan ke proyek yang sudah selesai/dibatalkan
+- Bisa membatalkan aplikasi selama masih PENDING
+
+## 3. Aturan Advertiser
+
+### Profil
+- Wajib mengisi:
+  - Nama perusahaan
+  - Industri
+  - Deskripsi perusahaan
+- Direkomendasikan mengisi:
+  - Website
+  - Logo perusahaan
+
+### Proyek
+- Wajib mencantumkan:
+  - Judul dan deskripsi
+  - Budget
+  - Deadline
+  - Persyaratan influencer
+- Tidak bisa mengedit proyek yang sudah memiliki aplikasi
+- Bisa membatalkan proyek yang belum memiliki kolaborasi aktif
+
+## 4. Aturan Status
+
+### Status Proyek
+- PENDING: Default saat dibuat
+- IN_PROGRESS: Otomatis saat ada kolaborasi disetujui
+- COMPLETED: Otomatis saat semua kolaborasi selesai
+- CANCELLED: Manual oleh advertiser
+
+### Status Kolaborasi
+- PENDING: Default saat influencer apply
+- APPROVED: Manual oleh advertiser
+- IN_PROGRESS: Otomatis saat proyek dimulai
+- COMPLETED: Manual oleh advertiser
+- REJECTED: Manual oleh advertiser
+- CANCELLED: Manual oleh advertiser/influencer
+
+### Aturan Transisi Status
+- PENDING -> APPROVED/REJECTED
+- APPROVED -> IN_PROGRESS
+- IN_PROGRESS -> COMPLETED/CANCELLED
+- Status final: COMPLETED, REJECTED, CANCELLED
+
+## 5. Aturan Notifikasi
+
+### Email Notifikasi
+- Verifikasi email saat registrasi
+- Perubahan status kolaborasi
+- Reminder deadline proyek
+- Reset password
+
+### Notifikasi In-App
+- Aplikasi baru untuk advertiser
+- Perubahan status untuk influencer
+- Pesan sistem dan pengumuman
+- Update proyek dan kolaborasi
+
+## 6. Validasi Data
+
+### Proyek
+- Budget: Nilai positif
+- Deadline: Tidak boleh di masa lalu
+- Deskripsi: Minimal 50 karakter
+- Persyaratan: Minimal 30 karakter
+
+### Kolaborasi
+- Proposal: Minimal 20 kata
+- Link submission: Valid URL
+- Feedback: Minimal 10 karakter
+- Status: Sesuai aturan transisi
+
+## 7. Hak dan Kewajiban
+
+### Hak Influencer
+- Melihat semua proyek yang tersedia
+- Mengajukan diri ke proyek yang sesuai
+- Menerima feedback dari advertiser
+- Membatalkan aplikasi yang masih pending
+
+### Kewajiban Influencer
+- Memberikan informasi profil yang akurat
+- Mengerjakan proyek sesuai persyaratan
+- Menyelesaikan proyek sebelum deadline
+- Menjaga komunikasi dengan advertiser
+
+### Hak Advertiser
+- Membuat dan mengelola proyek
+- Memilih influencer yang sesuai
+- Memberikan feedback dan rating
+- Membatalkan proyek yang belum aktif
+
+### Kewajiban Advertiser
+- Memberikan detail proyek yang jelas
+- Merespon aplikasi influencer
+- Memberikan feedback yang konstruktif
+- Menyelesaikan pembayaran tepat waktu

@@ -1,0 +1,163 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}
+<style>
+    :root {
+        --instagram-blue: #0095f6;
+        --instagram-gradient: linear-gradient(45deg, #405de6, #5851db, #833ab4, #c13584, #e1306c, #fd1d1d);
+    }
+
+    body {
+        background-color: #fafafa !important;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    #container {
+        background: none !important;
+        box-shadow: none !important;
+    }
+
+    #header {
+        background: white !important;
+        color: #262626 !important;
+        border-bottom: 1px solid #dbdbdb;
+    }
+
+    #branding h1 {
+        color: #262626;
+    }
+
+    .login {
+        background: white;
+        border: 1px solid #dbdbdb;
+        border-radius: 3px;
+        padding: 2rem !important;
+        margin-top: 2rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        max-width: 400px;
+        width: 100%;
+    }
+
+    .form-row {
+        padding: 0.5rem 0;
+    }
+
+    .form-row label {
+        color: #262626;
+        font-size: 0.9rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .form-row input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #dbdbdb;
+        border-radius: 3px;
+        background-color: #fafafa;
+        font-size: 0.9rem;
+    }
+
+    .form-row input:focus {
+        border-color: #8e8e8e;
+        outline: none;
+    }
+
+    .submit-row {
+        padding: 1rem 0 0 0 !important;
+        margin: 0 !important;
+        border: none !important;
+        background: none !important;
+        text-align: center !important;
+    }
+
+    .submit-row input {
+        width: 100%;
+        background: var(--instagram-blue) !important;
+        color: white !important;
+        padding: 0.75rem !important;
+        border-radius: 4px !important;
+        border: none !important;
+        font-weight: 600 !important;
+        cursor: pointer !important;
+        transition: background-color 0.3s ease !important;
+    }
+
+    .submit-row input:hover {
+        background: #0081e6 !important;
+    }
+
+    .errornote {
+        background: #ed4956 !important;
+        color: white !important;
+        padding: 0.75rem !important;
+        border-radius: 4px !important;
+        margin-bottom: 1rem !important;
+        font-size: 0.9rem !important;
+        border: none !important;
+    }
+
+    .password-reset-link {
+        text-align: center;
+        margin-top: 1rem;
+    }
+
+    .password-reset-link a {
+        color: var(--instagram-blue);
+        text-decoration: none;
+        font-size: 0.9rem;
+    }
+
+    .password-reset-link a:hover {
+        text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+        .login {
+            margin: 1rem;
+            padding: 1.5rem !important;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    {% if form.errors and not form.non_field_errors %}
+        <p class="errornote">
+            {% blocktranslate count counter=form.errors.items|length %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktranslate %}
+        </p>
+    {% endif %}
+
+    {% if form.non_field_errors %}
+        {% for error in form.non_field_errors %}
+            <p class="errornote">{{ error }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <div id="content-main">
+        <form action="{{ app_path }}" method="post" id="login-form">
+            {% csrf_token %}
+            <div class="form-row">
+                {{ form.username.errors }}
+                {{ form.username.label_tag }}
+                {{ form.username }}
+            </div>
+            <div class="form-row">
+                {{ form.password.errors }}
+                {{ form.password.label_tag }}
+                {{ form.password }}
+                <input type="hidden" name="next" value="{{ next }}">
+            </div>
+            <div class="submit-row">
+                <input type="submit" value="{% translate 'Log in' %}">
+            </div>
+            <div class="password-reset-link">
+                <a href="{% url 'admin_password_reset' %}">{% translate 'Forgotten your password?' %}</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load account socialaccount %}
+{% load crispy_forms_tags %}
+
+{% block title %}Sign Up - MicroInfluencer{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --instagram-blue: #0095f6;
+        --instagram-gradient: linear-gradient(45deg, #405de6, #5851db, #833ab4, #c13584, #e1306c, #fd1d1d);
+    }
+
+    .signup-container {
+        max-width: 400px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background: white;
+        border: 1px solid #dbdbdb;
+        border-radius: 3px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .signup-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .signup-header h1 {
+        font-size: 2rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        background: var(--instagram-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .signup-header p {
+        color: #8e8e8e;
+        font-size: 0.9rem;
+    }
+
+    .form-control {
+        background-color: #fafafa;
+        border: 1px solid #dbdbdb;
+        border-radius: 3px;
+        padding: 0.75rem;
+        font-size: 0.9rem;
+    }
+
+    .form-control:focus {
+        background-color: #fff;
+        border-color: #8e8e8e;
+        box-shadow: none;
+    }
+
+    .btn-signup {
+        width: 100%;
+        padding: 0.75rem;
+        background: var(--instagram-blue);
+        border: none;
+        border-radius: 4px;
+        color: white;
+        font-weight: 600;
+        margin-top: 1rem;
+        transition: background 0.3s ease;
+    }
+
+    .btn-signup:hover {
+        background: #0081e6;
+        color: white;
+    }
+
+    .signup-divider {
+        display: flex;
+        align-items: center;
+        text-align: center;
+        margin: 1.5rem 0;
+        color: #8e8e8e;
+    }
+
+    .signup-divider::before,
+    .signup-divider::after {
+        content: '';
+        flex: 1;
+        border-bottom: 1px solid #dbdbdb;
+    }
+
+    .signup-divider span {
+        padding: 0 10px;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+    }
+
+    .social-signup {
+        margin-bottom: 1.5rem;
+    }
+
+    .btn-social {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #dbdbdb;
+        border-radius: 4px;
+        background: white;
+        color: #262626;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-social:hover {
+        background: #fafafa;
+        border-color: #8e8e8e;
+    }
+
+    .btn-social i {
+        margin-right: 0.5rem;
+    }
+
+    .signup-footer {
+        text-align: center;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #dbdbdb;
+    }
+
+    .signup-footer p {
+        color: #8e8e8e;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .signup-footer a {
+        color: var(--instagram-blue);
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .signup-footer a:hover {
+        text-decoration: underline;
+    }
+
+    .errorlist {
+        color: #ed4956;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+        padding-left: 0;
+        list-style: none;
+    }
+
+    .alert {
+        border-radius: 4px;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+
+    .alert-error {
+        background-color: #ed4956;
+        color: white;
+        border: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="signup-container">
+    <div class="signup-header">
+        <h1>MicroInfluencer</h1>
+        <p>Join our community and connect with brands or influencers.</p>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post" action="{% url 'signup' %}" novalidate>
+        {% csrf_token %}
+        {{ form|crispy }}
+        
+        {% if redirect_field_value %}
+            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+        {% endif %}
+        
+        <button type="submit" class="btn btn-signup">{% trans "Sign Up" %}</button>
+    </form>
+
+    {% get_providers as socialaccount_providers %}
+    {% if socialaccount_providers %}
+        <div class="signup-divider">
+            <span>or</span>
+        </div>
+        <div class="social-signup">
+            {% for provider in socialaccount_providers %}
+                <a href="{% provider_login_url provider.id %}" class="btn btn-social">
+                    <i class="fab fa-{{ provider.id }}"></i>
+                    Continue with {{ provider.name }}
+                </a>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="signup-footer">
+        <p>Already have an account? <a href="{% url 'account_login' %}">Log in</a></p>
+        <p class="text-muted mt-2">By signing up, you agree to our Terms of Service and Privacy Policy.</p>
+    </div>
+</div>
+{% endblock %} 

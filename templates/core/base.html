@@ -1,0 +1,244 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/core.css' %}">
+<style>
+    :root {
+        /* Colors */
+        --primary-color: #0984e3;
+        --secondary-color: #6c5ce7;
+        --accent-color: #00cec9;
+        --danger-color: #d63031;
+        --success-color: #00b894;
+        --warning-color: #fdcb6e;
+        --surface-color: #ffffff;
+        --background-color: #f8f9fa;
+        --border-color: #e9ecef;
+        --text-primary: #2d3436;
+        --text-secondary: #636e72;
+        --text-white: #ffffff;
+        
+        /* Gradients */
+        --gradient-primary: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        --gradient-accent: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
+        
+        /* Radius */
+        --radius-sm: 4px;
+        --radius-md: 8px;
+        --radius-lg: 16px;
+        
+        /* Shadows */
+        --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+        --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+        --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+        --hover-shadow: 0 15px 30px rgba(0,0,0,0.15);
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--background-color);
+        color: var(--text-primary);
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    .card {
+        background: var(--surface-color);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+
+    .card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .card-header {
+        background: var(--gradient-primary);
+        color: white;
+        font-weight: 600;
+        border-bottom: none;
+    }
+
+    .badge {
+        padding: 0.5em 1em;
+        font-weight: 600;
+        letter-spacing: 0.025em;
+    }
+
+    .badge-primary {
+        background: var(--gradient-primary);
+    }
+
+    .badge-success {
+        background: var(--success-gradient);
+    }
+
+    .badge-danger {
+        background: var(--danger-gradient);
+    }
+
+    .btn {
+        padding: 0.5rem 1.25rem;
+        font-weight: 600;
+        border-radius: var(--radius-md);
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+        background: var(--gradient-primary);
+        border: none;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: var(--gradient-accent);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .btn-outline-light {
+        border: 2px solid white;
+        color: white;
+    }
+
+    .btn-outline-light:hover {
+        background: rgba(255,255,255,0.1);
+        border-color: white;
+        color: white !important;
+        transform: translateY(-2px);
+    }
+
+    .section-title {
+        position: relative;
+        padding-bottom: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 60px;
+        height: 4px;
+        background: var(--gradient-primary);
+        border-radius: var(--radius-sm);
+    }
+
+    .gradient-card {
+        background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        transition: all 0.3s ease;
+    }
+
+    .gradient-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .list-item-gradient {
+        background: var(--gradient-primary);
+        color: var(--text-white);
+        padding: 1rem;
+        border-radius: var(--radius-md);
+        margin-bottom: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .list-item-gradient:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--hover-shadow);
+        background: var(--gradient-accent);
+    }
+
+    .list-item-gradient i {
+        color: var(--text-white);
+    }
+
+    .list-item-gradient * {
+        color: var(--text-white);
+    }
+
+    .text-gradient {
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .btn-gradient {
+        background: var(--gradient-primary);
+        border: none;
+        color: var(--text-white);
+    }
+
+    .btn-gradient:hover {
+        background: var(--gradient-accent);
+        color: var(--text-white);
+        transform: translateY(-2px);
+        box-shadow: var(--hover-shadow);
+    }
+
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    /* Progress bars */
+    .progress {
+        height: 0.75rem;
+        background-color: var(--border-color);
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        background: var(--gradient-primary);
+        transition: width 0.6s ease;
+    }
+
+    /* Stats cards */
+    .stats-card {
+        background: linear-gradient(135deg, var(--surface-color) 0%, rgba(255,255,255,0.95) 100%);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .stats-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .stats-icon {
+        width: 48px;
+        height: 48px;
+        background: var(--gradient-primary);
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% endblock %}
+
+{% block extra_js %}
+{% endblock %} 

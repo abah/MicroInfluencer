@@ -1,0 +1,295 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}MicroInfluencer - Connect Brands with Creators{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="container">
+        <div class="row align-items-center min-vh-75">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4 text-gradient">Connect with Perfect Creators for Your Brand</h1>
+                <p class="lead mb-4">Platform yang menghubungkan brand dengan micro-influencer untuk kolaborasi yang impactful.</p>
+                <div class="d-flex gap-3">
+                    <a href="{% url 'signup' %}" class="btn btn-gradient btn-lg">
+                        <i class="fas fa-rocket me-2"></i>Mulai Sekarang
+                    </a>
+                    <a href="#how-it-works" class="btn btn-gradient btn-lg">
+                        <i class="fas fa-play me-2"></i>Jelajahi Project
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <img src="https://images.unsplash.com/photo-1552664730-d307ca884978" alt="Hero Image" class="img-fluid rounded-lg shadow-lg">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Section -->
+<div class="stats-section py-5">
+    <div class="container">
+        <div class="row g-4 text-center">
+            <div class="col-md-3 col-6">
+                <div class="stat-card list-item-gradient">
+                    <h3 class="fw-bold mb-0">1000+</h3>
+                    <p class="mb-0">Active Influencers</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-card list-item-gradient">
+                    <h3 class="fw-bold mb-0">500+</h3>
+                    <p class="mb-0">Completed Projects</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-card list-item-gradient">
+                    <h3 class="fw-bold mb-0">200+</h3>
+                    <p class="mb-0">Active Brands</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-card list-item-gradient">
+                    <h3 class="fw-bold mb-0">95%</h3>
+                    <p class="mb-0">Satisfaction Rate</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Why Micro Influencer Section -->
+<section class="why-section py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">Why Micro Influencer?</h2>
+            <p class="section-subtitle">Keunggulan bekerja sama dengan micro-influencer</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="feature-card list-item-gradient h-100">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>High Engagement Rate</h3>
+                    <p>Micro-influencer memiliki engagement rate 60% lebih tinggi dibanding macro-influencer</p>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="feature-card list-item-gradient h-100">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-bullseye"></i>
+                    </div>
+                    <h3>Specific Target Audience</h3>
+                    <p>Jangkau audiens yang tepat dengan niche market yang spesifik</p>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="feature-card list-item-gradient h-100">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <h3>Cost Effective</h3>
+                    <p>Biaya yang lebih terjangkau dengan hasil yang optimal</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section id="how-it-works" class="how-section py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">How It Works</h2>
+            <p class="section-subtitle">Langkah mudah untuk memulai kolaborasi</p>
+        </div>
+        
+        <!-- For Brands -->
+        <div class="mb-5">
+            <h3 class="text-gradient mb-4">Untuk Brand</h3>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="content list-item-gradient">
+                        <h4>Buat Profil Brand</h4>
+                        <p>Lengkapi profil perusahaan Anda dengan informasi yang relevan</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="content list-item-gradient">
+                        <h4>Posting Proyek</h4>
+                        <p>Buat proyek dengan detail kampanye dan persyaratan yang jelas</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="content list-item-gradient">
+                        <h4>Pilih Influencer</h4>
+                        <p>Review dan pilih influencer yang sesuai dengan kebutuhan Anda</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="content list-item-gradient">
+                        <h4>Kelola Kolaborasi</h4>
+                        <p>Pantau progress dan hasil kampanye secara real-time</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- For Influencers -->
+        <div>
+            <h3 class="text-gradient mb-4">Untuk Influencer</h3>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="content list-item-gradient">
+                        <h4>Buat Profil Influencer</h4>
+                        <p>Tampilkan portofolio dan statistik media sosial Anda</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="content list-item-gradient">
+                        <h4>Temukan Proyek</h4>
+                        <p>Jelajahi dan pilih proyek yang sesuai dengan niche Anda</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="content list-item-gradient">
+                        <h4>Ajukan Proposal</h4>
+                        <p>Kirim pengajuan dengan proposal yang menarik</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="content list-item-gradient">
+                        <h4>Mulai Berkolaborasi</h4>
+                        <p>Kerjakan konten dan dapatkan pembayaran</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section py-5">
+    <div class="container">
+        <div class="cta-card list-item-gradient text-center">
+            <h2 class="mb-4">Siap Untuk Memulai?</h2>
+            <p class="lead mb-4">Bergabung sekarang dan temukan peluang kolaborasi yang tepat untuk Anda</p>
+            <a href="{% url 'signup' %}" class="btn btn-light btn-lg">
+                <i class="fas fa-rocket me-2"></i>Daftar Sekarang
+            </a>
+        </div>
+    </div>
+</section>
+
+<style>
+.hero-section {
+    padding: 5rem 0;
+    background: linear-gradient(135deg, var(--surface-color) 0%, rgba(255,255,255,0.95) 100%);
+}
+
+.text-gradient {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.stat-card {
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    height: 100%;
+    color: white;
+}
+
+.stat-card h3 {
+    font-size: 2.5rem;
+    color: white;
+}
+
+.feature-card {
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    text-align: center;
+    color: white;
+}
+
+.feature-card .icon-wrapper {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1.5rem;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.feature-card .icon-wrapper i {
+    font-size: 2rem;
+    color: white;
+}
+
+.feature-card h3 {
+    margin-bottom: 1rem;
+    color: white;
+}
+
+.timeline {
+    position: relative;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.timeline-item {
+    margin-bottom: 2rem;
+}
+
+.timeline-item .content {
+    padding: 1.5rem;
+    border-radius: var(--radius-lg);
+    color: white;
+}
+
+.timeline-item .content h4 {
+    margin-bottom: 0.5rem;
+    color: white;
+}
+
+.cta-card {
+    padding: 4rem 2rem;
+    border-radius: var(--radius-lg);
+    color: white;
+}
+
+.cta-card h2 {
+    color: white;
+}
+
+.btn-light {
+    background: white;
+    color: var(--primary-color);
+    border: none;
+    font-weight: 600;
+}
+
+.btn-light:hover {
+    background: var(--background-color);
+    transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 3rem 0;
+    }
+    
+    .stat-card h3 {
+        font-size: 2rem;
+    }
+    
+    .feature-card {
+        margin-bottom: 1rem;
+    }
+}
+</style>
+{% endblock %} 

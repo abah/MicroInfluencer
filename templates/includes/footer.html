@@ -1,0 +1,201 @@
+<!-- Footer -->
+<footer class="footer mt-auto py-5">
+    <div class="container">
+        <!-- Main Footer Content -->
+        <div class="row g-4">
+            <!-- Brand Section -->
+            <div class="col-lg-4 col-md-6">
+                <div class="footer-brand mb-4">
+                    <h5 class="d-flex align-items-center">
+                        <i class="fas fa-chart-line text-primary me-2"></i>
+                        <span>MicroInfluencer</span>
+                    </h5>
+                    <p class="text-secondary">Platform yang menghubungkan brand dengan micro-influencer untuk kolaborasi yang efektif dan terukur.</p>
+                </div>
+                <!-- Social Links -->
+                <div class="social-links">
+                    <a href="#" class="me-3" title="Follow us on LinkedIn">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                    <a href="#" class="me-3" title="Follow us on Twitter">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" class="me-3" title="Follow us on Instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="col-lg-2 col-md-6">
+                <h6 class="mb-3">Quick Links</h6>
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <a href="{% url 'project_list' %}" class="footer-link">
+                            <i class="fas fa-angle-right me-1"></i>Projects
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="{% url 'influencer_list' %}" class="footer-link">
+                            <i class="fas fa-angle-right me-1"></i>Influencers
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="#" class="footer-link">
+                            <i class="fas fa-angle-right me-1"></i>How It Works
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="#" class="footer-link">
+                            <i class="fas fa-angle-right me-1"></i>Pricing
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Resources -->
+            <div class="col-lg-2 col-md-6">
+                <h6 class="mb-3">Resources</h6>
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <a href="#" class="footer-link">
+                            <i class="fas fa-angle-right me-1"></i>Blog
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="#" class="footer-link">
+                            <i class="fas fa-angle-right me-1"></i>Case Studies
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="#" class="footer-link">
+                            <i class="fas fa-angle-right me-1"></i>Help Center
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="#" class="footer-link">
+                            <i class="fas fa-angle-right me-1"></i>Guidelines
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="col-lg-4 col-md-6">
+                <h6 class="mb-3">Contact Us</h6>
+                <ul class="list-unstyled contact-info">
+                    <li class="mb-3 d-flex align-items-center">
+                        <i class="fas fa-envelope text-primary me-2"></i>
+                        <span>support@microinfluencer.com</span>
+                    </li>
+                    <li class="mb-3 d-flex align-items-center">
+                        <i class="fas fa-phone text-primary me-2"></i>
+                        <span>+62 812-3456-7890</span>
+                    </li>
+                    <li class="mb-3 d-flex align-items-center">
+                        <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                        <span>Jl. Influencer No. 123, Jakarta Selatan</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Divider -->
+        <hr class="my-4">
+
+        <!-- Bottom Footer -->
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <p class="mb-0 text-secondary small">
+                    &copy; {% now "Y" %} MicroInfluencer. All rights reserved.
+                </p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <div class="footer-links small">
+                    <a href="#" class="text-secondary me-3">Privacy Policy</a>
+                    <a href="#" class="text-secondary me-3">Terms of Service</a>
+                    <a href="#" class="text-secondary">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<style>
+.footer {
+    background-color: var(--surface-color);
+    border-top: 1px solid var(--border-color);
+}
+
+.footer h5 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.footer h6 {
+    font-weight: 600;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.footer-link {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+}
+
+.footer-link:hover {
+    color: var(--primary-color);
+    transform: translateX(4px);
+}
+
+.social-links a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 1.25rem;
+    transition: all 0.2s ease;
+}
+
+.social-links a:hover {
+    color: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+.contact-info li {
+    color: var(--text-secondary);
+}
+
+.contact-info i {
+    width: 20px;
+    text-align: center;
+}
+
+.footer-links a {
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.footer-links a:hover {
+    color: var(--primary-color) !important;
+}
+
+@media (max-width: 767.98px) {
+    .footer-links {
+        margin-top: 1rem;
+        text-align: center;
+    }
+    
+    .text-md-end {
+        text-align: center !important;
+    }
+    
+    .mb-0 {
+        margin-bottom: 1rem !important;
+        text-align: center;
+    }
+}
+</style> 

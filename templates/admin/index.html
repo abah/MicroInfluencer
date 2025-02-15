@@ -1,0 +1,212 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}{{ block.super }}
+<style>
+    .dashboard {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+    }
+
+    .app-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .app-item {
+        background: white;
+        border: 1px solid #dbdbdb;
+        border-radius: 3px;
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+    }
+
+    .app-item h2 {
+        background: var(--instagram-blue);
+        color: white;
+        margin: 0;
+        padding: 1rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    .model-list {
+        padding: 1rem;
+        margin: 0;
+        list-style: none;
+    }
+
+    .model-list li {
+        margin-bottom: 0.5rem;
+    }
+
+    .model-list li:last-child {
+        margin-bottom: 0;
+    }
+
+    .model-link {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.75rem;
+        background: #fafafa;
+        border-radius: 3px;
+        color: #262626;
+        text-decoration: none;
+        transition: background-color 0.2s ease;
+    }
+
+    .model-link:hover {
+        background: #f0f0f0;
+    }
+
+    .model-name {
+        font-weight: 500;
+    }
+
+    .model-count {
+        background: var(--instagram-blue);
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .recent-actions {
+        background: white;
+        border: 1px solid #dbdbdb;
+        border-radius: 3px;
+        padding: 1rem;
+    }
+
+    .recent-actions h2 {
+        color: #262626;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0 0 1rem 0;
+    }
+
+    .actionlist {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .actionlist li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #dbdbdb;
+        color: #262626;
+    }
+
+    .actionlist li:last-child {
+        border-bottom: none;
+    }
+
+    .welcome-message {
+        background: white;
+        border: 1px solid #dbdbdb;
+        border-radius: 3px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    .welcome-message h1 {
+        color: #262626;
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin: 0 0 1rem 0;
+    }
+
+    .welcome-message p {
+        color: #8e8e8e;
+        margin: 0;
+    }
+
+    @media (max-width: 768px) {
+        .dashboard {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block coltype %}colMS{% endblock %}
+
+{% block bodyclass %}{{ block.super }} dashboard{% endblock %}
+
+{% block content %}
+<div class="welcome-message">
+    <h1>{% translate 'Welcome to MicroInfluencer Admin' %}</h1>
+    <p>{% translate 'Manage your application content and settings here.' %}</p>
+</div>
+
+<div id="content-main">
+    <div class="dashboard">
+        {% if app_list %}
+            {% for app in app_list %}
+                <div class="app-item">
+                    <h2>{{ app.name }}</h2>
+                    <ul class="model-list">
+                        {% for model in app.models %}
+                            <li>
+                                {% if model.admin_url %}
+                                    <a href="{{ model.admin_url }}" class="model-link">
+                                        <span class="model-name">{{ model.name }}</span>
+                                        {% if model.count is not None %}
+                                            <span class="model-count">{{ model.count }}</span>
+                                        {% endif %}
+                                    </a>
+                                {% else %}
+                                    {{ model.name }}
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>{% translate 'You don't have permission to view or edit anything.' %}</p>
+        {% endif %}
+
+        <div class="recent-actions">
+            <h2>{% translate 'Recent actions' %}</h2>
+            {% load log %}
+            {% get_admin_log 10 as admin_log %}
+            {% if not admin_log %}
+                <p>{% translate 'None available' %}</p>
+            {% else %}
+                <ul class="actionlist">
+                    {% for entry in admin_log %}
+                        <li>
+                            {% if entry.is_addition %}
+                                <span class="addlink">{% translate 'Added' %}</span>
+                            {% elif entry.is_change %}
+                                <span class="changelink">{% translate 'Changed' %}</span>
+                            {% elif entry.is_deletion %}
+                                <span class="deletelink">{% translate 'Deleted' %}</span>
+                            {% endif %}
+                            {% if entry.content_type %}
+                                <span class="mini quiet">{% filter capfirst %}{{ entry.content_type.name }}{% endfilter %}</span>
+                            {% else %}
+                                <span class="mini quiet">{% translate 'Unknown content' %}</span>
+                            {% endif %}
+                            {% if entry.is_deletion or not entry.get_admin_url %}
+                                <span>{{ entry.object_repr }}</span>
+                            {% else %}
+                                <a href="{{ entry.get_admin_url }}">{{ entry.object_repr }}</a>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block sidebar %}{% endblock %} 

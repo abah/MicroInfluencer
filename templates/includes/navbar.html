@@ -1,0 +1,217 @@
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg sticky-top">
+    <div class="container">
+        <!-- Brand -->
+        <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
+            <i class="fas fa-chart-line text-primary me-2"></i>
+            <span class="fw-bold">MicroInfluencer</span>
+        </a>
+
+        <!-- Mobile Toggle -->
+        <button class="navbar-toggler border-0 p-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <!-- Navbar Content -->
+        <div class="collapse navbar-collapse" id="navbarContent">
+            <!-- Main Navigation -->
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item mx-2">
+                    <a class="nav-link d-flex align-items-center" href="{% url 'project_list' %}">
+                        <i class="fas fa-briefcase me-2"></i>
+                        <span>Projects</span>
+                    </a>
+                </li>
+                <li class="nav-item mx-2">
+                    <a class="nav-link d-flex align-items-center" href="{% url 'influencer_list' %}">
+                        <i class="fas fa-users me-2"></i>
+                        <span>Influencers</span>
+                    </a>
+                </li>
+            </ul>
+
+            <!-- User Menu -->
+            <ul class="navbar-nav">
+                {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                            <div class="avatar-circle me-2">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <span>{{ user.get_full_name|default:user.email }}</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+                            {% if user.role == 'INFLUENCER' %}
+                                {% if user.influencer_profile %}
+                                <li>
+                                    <a class="dropdown-item py-2" href="{% url 'influencer_detail' user.influencer_profile.id %}">
+                                        <i class="fas fa-id-card me-2 text-primary"></i>
+                                        <span>My Profile</span>
+                                    </a>
+                                </li>
+                                {% else %}
+                                <li>
+                                    <a class="dropdown-item py-2" href="{% url 'influencer_profile_create' %}">
+                                        <i class="fas fa-user-plus me-2 text-primary"></i>
+                                        <span>Complete Profile</span>
+                                    </a>
+                                </li>
+                                {% endif %}
+                            {% elif user.role == 'ADVERTISER' %}
+                                {% if user.advertiser_profile %}
+                                <li>
+                                    <a class="dropdown-item py-2" href="{% url 'advertiser_detail' user.advertiser_profile.id %}">
+                                        <i class="fas fa-building me-2 text-primary"></i>
+                                        <span>Company Profile</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item py-2" href="{% url 'project_create' %}">
+                                        <i class="fas fa-plus-circle me-2 text-primary"></i>
+                                        <span>Create Project</span>
+                                    </a>
+                                </li>
+                                {% else %}
+                                <li>
+                                    <a class="dropdown-item py-2" href="{% url 'advertiser_profile_create' %}">
+                                        <i class="fas fa-user-plus me-2 text-primary"></i>
+                                        <span>Complete Company Profile</span>
+                                    </a>
+                                </li>
+                                {% endif %}
+                            {% endif %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item py-2 text-danger" href="{% url 'account_logout' %}">
+                                    <i class="fas fa-sign-out-alt me-2"></i>
+                                    <span>Logout</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-outline me-2" href="{% url 'account_login' %}">
+                            <i class="fas fa-sign-in-alt me-2"></i>
+                            <span>Login</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-primary" href="{% url 'signup' %}">
+                            <i class="fas fa-user-plus me-2"></i>
+                            <span>Sign Up</span>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<style>
+.navbar {
+    background: linear-gradient(135deg, var(--surface-color) 0%, rgba(255,255,255,0.95) 100%);
+    box-shadow: var(--shadow-sm);
+    padding: 0.75rem 0;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.navbar-brand {
+    font-size: 1.25rem;
+    color: var(--text-primary);
+}
+
+.navbar-brand i {
+    font-size: 1.5rem;
+}
+
+.nav-link {
+    color: var(--text-primary);
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease;
+}
+
+.nav-link:hover {
+    color: var(--primary-color);
+    background-color: var(--background-color);
+}
+
+.avatar-circle {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.dropdown-menu {
+    border-radius: var(--radius-md);
+    margin-top: 0.5rem;
+    min-width: 220px;
+}
+
+.dropdown-item {
+    color: var(--text-primary);
+    font-weight: 500;
+    padding: 0.75rem 1rem;
+    transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+    background-color: var(--background-color);
+    color: var(--primary-color);
+}
+
+.dropdown-item i {
+    width: 20px;
+    text-align: center;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+@media (max-width: 991.98px) {
+    .navbar-collapse {
+        background-color: var(--surface-color);
+        padding: 1rem;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-lg);
+        position: absolute;
+        top: 100%;
+        left: 1rem;
+        right: 1rem;
+        z-index: 1000;
+    }
+
+    .navbar-nav {
+        padding: 0.5rem 0;
+    }
+
+    .nav-item {
+        margin: 0.25rem 0;
+    }
+
+    .dropdown-menu {
+        border: none;
+        box-shadow: none;
+        background-color: var(--background-color);
+        margin-top: 0;
+        padding: 0;
+    }
+}
+</style> 
