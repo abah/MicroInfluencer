@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.sites",
+    "django.contrib.sitemaps",
     
     # Third party apps
     "allauth",
@@ -184,3 +185,18 @@ DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
 # Crispy Forms
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+# SEO Settings
+SITE_NAME = 'MicroInfluencer'
+SITE_DOMAIN = 'microinfluencer.com'
+
+# Meta Settings
+META_SITE_PROTOCOL = 'https'
+META_USE_SITES = True
+META_USE_OG_PROPERTIES = True
+META_USE_TWITTER_PROPERTIES = True
+META_DEFAULT_KEYWORDS = ['micro influencer', 'influencer marketing', 'brand collaboration', 
+                        'social media', 'content creator', 'digital marketing']
+
+# Sitemap Settings
+SITEMAP_INCLUDE_HTTPS = True

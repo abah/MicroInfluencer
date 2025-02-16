@@ -21,11 +21,23 @@ from .forms import (
 
 def home(request):
     context = {
-        'influencer_count': InfluencerProfile.objects.count(),
-        'project_count': Project.objects.count(),
-        'active_projects': Project.objects.filter(status__in=['PENDING', 'IN_PROGRESS']).count(),
-        'featured_influencers': InfluencerProfile.objects.order_by('-follower_count')[:5],
-        'featured_advertisers': AdvertiserProfile.objects.order_by('-created_at')[:5],
+        'latest_projects': Project.objects.select_related(
+            'advertiser',
+            'advertiser__advertiserprofile'
+        ).filter(
+            status__in=['PENDING', 'IN_PROGRESS']
+        ).order_by('-created_at')[:3],
+        
+        'featured_influencers': User.objects.select_related(
+            'influencer_profile'
+        ).filter(
+            role='INFLUENCER'
+        ).order_by('-influencer_profile__follower_count')[:3],
+        
+        'influencer_count': User.objects.filter(role='INFLUENCER').count(),
+        'project_count': Project.objects.filter(status__in=['PENDING', 'IN_PROGRESS']).count(),
+        'niche_count': InfluencerProfile.objects.values('niche').distinct().count(),
+        'advertiser_count': User.objects.filter(role='ADVERTISER').count(),
     }
     return render(request, 'core/home.html', context)
 
