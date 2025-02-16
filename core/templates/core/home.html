@@ -16,9 +16,10 @@
 <style>
     /* Hero Section */
     .hero-section {
-        background: linear-gradient(135deg, #2563eb 0%, #4f46e5 50%, #7c3aed 100%);
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
         color: white;
-        padding: 6rem 0;
+        padding: 5rem 0;
+        margin-bottom: 3rem;
         position: relative;
         overflow: hidden;
     }
@@ -26,6 +27,16 @@
     .hero-content {
         position: relative;
         z-index: 2;
+    }
+
+    .hero-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.3);
+        z-index: 1;
     }
 
     .hero-title {
@@ -256,34 +267,22 @@
 {% block content %}
 <!-- Hero Section -->
 <section class="hero-section">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-6 hero-content">
-                <h1 class="hero-title">Tingkatkan Personal Brand Anda Bersama Kami</h1>
-                <p class="hero-subtitle">Platform yang menghubungkan micro influencer dengan brand ternama untuk kolaborasi yang menguntungkan.</p>
-                <div class="d-flex gap-3">
-                    <a href="{% url 'signup' %}" class="btn btn-light btn-lg">
-                        <i class="fas fa-user-plus me-2"></i>Daftar Sekarang
-                    </a>
-                    <a href="{% url 'project_list' %}" class="btn btn-outline-light btn-lg">
-                        <i class="fas fa-briefcase me-2"></i>Lihat Project
-                    </a>
+    <div class="hero-overlay"></div>
+    <div class="container hero-content">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">Platform #1 untuk Micro Influencer di Indonesia</h1>
+                <p class="lead mb-4">Temukan kolaborasi yang tepat antara brand dan influencer untuk kampanye yang lebih efektif</p>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                    <a href="{% url 'signup' %}" class="btn btn-light btn-lg px-4 me-md-2">Daftar Sekarang</a>
+                    <a href="{% url 'project_list' %}" class="btn btn-outline-light btn-lg px-4">Lihat Project</a>
                 </div>
             </div>
-        </div>
-    </div>
-    <div class="hero-illustration">
-        <div class="floating-icon icon-1">
-            <i class="fas fa-star"></i>
-        </div>
-        <div class="floating-icon icon-2">
-            <i class="fas fa-heart"></i>
-        </div>
-        <div class="floating-icon icon-3">
-            <i class="fas fa-camera"></i>
-        </div>
-        <div class="floating-icon icon-4">
-            <i class="fas fa-comment"></i>
+            <div class="col-lg-6">
+                <div class="text-center">
+                    <i class="fas fa-chart-line fa-10x text-white-50"></i>
+                </div>
+            </div>
         </div>
     </div>
 </section>
