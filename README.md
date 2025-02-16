@@ -1,98 +1,129 @@
 # MicroInfluencer Platform
 
-Platform yang menghubungkan pengiklan dengan micro-influencer untuk kolaborasi kampanye pemasaran yang efektif.
+Platform yang menghubungkan micro-influencer dengan brand untuk kolaborasi yang lebih efektif.
 
 ## Fitur Utama
 
 ### Untuk Influencer
-- Buat profil influencer dengan detail follower, niche, dan bio
-- Jelajahi proyek yang tersedia dari pengiklan
-- Ajukan diri untuk proyek yang diminati
-- Pantau status kolaborasi (Pending, Approved, In Progress, Completed)
-- Lihat riwayat proyek yang telah diselesaikan
+- Profil lengkap dengan statistik engagement dan follower count
+- Integrasi dengan Instagram, TikTok, dan YouTube
+- Manajemen kolaborasi dengan interface yang intuitif
+- Status tracking untuk setiap proyek (Aktif, Menunggu, Selesai, Dibatalkan)
+- Sistem komunikasi terintegrasi dengan advertiser
+- Interface modern dengan efek visual yang menarik
 
-### Untuk Pengiklan (Advertiser)
-- Buat profil perusahaan dengan detail industri dan deskripsi
-- Posting proyek kampanye dengan detail budget dan persyaratan
-- Kelola aplikasi dari influencer
-- Pantau progress kolaborasi yang sedang berjalan
-- Lihat riwayat kampanye yang telah selesai
+### Untuk Advertiser
+- Dashboard manajemen proyek yang komprehensif
+- Sistem review aplikasi influencer yang efisien
+- Tracking status kolaborasi real-time
+- Manajemen multi-proyek dalam satu interface
+- Sistem feedback dan rating terintegrasi
+- Analisis performa kampanye
 
 ## Teknologi
 
-- Django 5.0.2
-- Python 3.11
-- Bootstrap 5
-- SQLite Database
-- Django Allauth untuk autentikasi
+- Backend: Django 5.0.2
+- Frontend: Bootstrap 5, SASS, JavaScript
+- Database: PostgreSQL
+- Authentication: Django-allauth
+- UI/UX: Modern design dengan gradient dan efek visual
+- Responsive design untuk semua device
+
+## Persyaratan Sistem
+
+- Python 3.11+
+- PostgreSQL 14+
+- Node.js 18+ (untuk asset compilation)
 
 ## Instalasi
 
-1. Clone repository
+1. Clone repository:
 ```bash
-git clone https://github.com/username/MicroInfluencer.git
+git clone https://github.com/abah/MicroInfluencer.git
 cd MicroInfluencer
 ```
 
-2. Buat virtual environment
+2. Buat virtual environment:
 ```bash
 python -m venv venv
 source venv/bin/activate  # Linux/Mac
-venv\Scripts\activate  # Windows
+venv\Scripts\activate     # Windows
 ```
 
-3. Install dependencies
+3. Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-4. Jalankan migrasi database
+4. Setup database:
 ```bash
 python manage.py migrate
 ```
 
-5. Buat superuser
+5. Buat superuser:
 ```bash
 python manage.py createsuperuser
 ```
 
-6. Jalankan server
+6. Jalankan server:
 ```bash
 python manage.py runserver
 ```
 
-## Status Proyek dan Kolaborasi
+## Fitur Terbaru
 
-### Status Proyek
-- PENDING: Proyek baru dibuat dan menunggu aplikasi dari influencer
-- IN_PROGRESS: Minimal satu influencer telah disetujui dan sedang mengerjakan
-- COMPLETED: Semua kolaborasi telah selesai
-- CANCELLED: Proyek dibatalkan
+### UI/UX Improvements
+- Modern gradient design untuk header dan cards
+- Efek hover yang responsif pada semua elemen
+- Status badges dengan warna yang intuitif
+- Layout grid yang adaptif
+- Optimasi untuk mobile devices
 
-### Status Kolaborasi
-- PENDING: Influencer mengajukan diri dan menunggu persetujuan
-- APPROVED: Pengajuan diterima, menunggu dimulai
-- IN_PROGRESS: Influencer sedang mengerjakan konten
-- COMPLETED: Kolaborasi selesai
-- REJECTED: Pengajuan ditolak
-- CANCELLED: Kolaborasi dibatalkan
+### Sistem Kolaborasi
+- Status tracking yang lebih detail
+- Interface komunikasi yang terintegrasi
+- Sistem notifikasi real-time
+- Manajemen multi-proyek
+- Timeline aktivitas proyek
 
-## Alur Kerja
+### Profil Influencer
+- Statistik engagement yang detail
+- Integrasi multi-platform social media
+- Portfolio showcase
+- Analytics dashboard
+- Performance metrics
 
-1. Pengiklan membuat proyek baru (status: PENDING)
-2. Influencer mengajukan diri (status kolaborasi: PENDING)
-3. Pengiklan menyetujui/menolak pengajuan
-4. Jika disetujui:
-   - Status kolaborasi berubah menjadi APPROVED
-   - Status proyek berubah menjadi IN_PROGRESS
-5. Influencer mulai mengerjakan (status kolaborasi: IN_PROGRESS)
-6. Setelah selesai, pengiklan menandai sebagai COMPLETED
-7. Jika semua kolaborasi selesai, proyek otomatis ditandai COMPLETED
+## Struktur Proyek
+
+```
+MicroInfluencer/
+├── core/                   # App utama
+│   ├── templates/         # Template HTML
+│   ├── static/           # Assets
+│   ├── models.py         # Model data
+│   └── views.py          # Logic
+├── static/               # Global static files
+│   ├── css/             # Compiled CSS
+│   ├── js/              # JavaScript
+│   └── images/          # Media files
+├── templates/           # Global templates
+└── microinfluencer/    # Konfigurasi proyek
+```
 
 ## Kontribusi
 
-Silakan buat pull request untuk kontribusi. Untuk perubahan besar, harap buka issue terlebih dahulu.
+1. Fork repository
+2. Buat branch fitur (`git checkout -b feature/AmazingFeature`)
+3. Commit perubahan (`git commit -m 'Add some AmazingFeature'`)
+4. Push ke branch (`git push origin feature/AmazingFeature`)
+5. Buat Pull Request
 
 ## Lisensi
 
-[MIT License](LICENSE) 
+Distributed under the MIT License. See `LICENSE` for more information.
+
+## Kontak
+
+Abah - [@abahraditya](https://twitter.com/abahraditya)
+
+Project Link: [https://github.com/abah/MicroInfluencer](https://github.com/abah/MicroInfluencer) 

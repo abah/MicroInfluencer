@@ -1,8 +1,9 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.core.validators import MinValueValidator
-from .models import User, InfluencerProfile, AdvertiserProfile, Project, Collaboration
+from .models import User, InfluencerProfile, AdvertiserProfile, Project, Collaboration, ProjectUpdate
 from django.utils import timezone
+from django.core.exceptions import ValidationError
 
 class SignUpForm(UserCreationForm):
     ROLE_CHOICES = [
@@ -192,3 +193,92 @@ class InfluencerSearchForm(forms.Form):
         if min_followers and max_followers and min_followers > max_followers:
             raise forms.ValidationError("Minimum followers cannot be greater than maximum followers")
         return cleaned_data 
+
+class ProjectUpdateForm(forms.ModelForm):
+    class Meta:
+        model = ProjectUpdate
+        fields = ['update_type', 'content', 'attachment_url']
+        widgets = {
+            'content': forms.Textarea(attrs={
+                'rows': 4,
+                'class': 'form-control',
+                'placeholder': 'Tulis update Anda di sini...'
+            }),
+            'attachment_url': forms.URLInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'https://'
+            }),
+            'update_type': forms.Select(attrs={
+                'class': 'form-select'
+            })
+        }
+        labels = {
+            'content': 'Isi Update',
+            'attachment_url': 'Link Lampiran',
+            'update_type': 'Tipe Update'
+        }
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        self.collaboration = kwargs.pop('collaboration', None)
+        
+        if not self.user:
+            raise ValueError("User is required")
+            
+        if not self.collaboration:
+            raise ValueError("Collaboration is required")
+            
+        super().__init__(*args, **kwargs)
+        
+        # Set initial values for sender and collaboration
+        if not self.instance.pk:  # Only for new instances
+            self.instance.sender = self.user
+            self.instance.collaboration = self.collaboration
+        
+        # Set update type choices based on user role
+        if self.user.role == User.Role.ADVERTISER:
+            self.fields['update_type'].choices = [
+                ('BRIEF', 'Brief'),
+                ('REVISION', 'Revision Request'),
+                ('FEEDBACK', 'Feedback')
+            ]
+        elif self.user.role == User.Role.INFLUENCER:
+            self.fields['update_type'].choices = [
+                ('PROGRESS', 'Progress Update')
+            ]
+            self.fields['update_type'].initial = 'PROGRESS'
+            self.fields['update_type'].widget = forms.HiddenInput()
+
+    def clean(self):
+        cleaned_data = super().clean()
+        
+        if not self.user or not self.collaboration:
+            raise ValidationError("User and collaboration must be set")
+            
+        # Validate content is not empty
+        content = cleaned_data.get('content')
+        if not content or not content.strip():
+            raise ValidationError({
+                'content': 'Content is required'
+            })
+            
+        return cleaned_data
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        
+        # Make sure sender and collaboration are set
+        if not instance.sender_id:
+            instance.sender = self.user
+        if not instance.collaboration_id:
+            instance.collaboration = self.collaboration
+        
+        if commit:
+            try:
+                instance.save()
+            except ValidationError as e:
+                raise ValidationError(str(e))
+            except Exception as e:
+                raise ValidationError(f"Error saving update: {str(e)}")
+        
+        return instance 

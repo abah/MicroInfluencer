@@ -1,53 +1,156 @@
-{% extends 'core/base.html' %}
+{% extends 'base.html' %}
 {% load static %}
-{% load project_filters %}
+{% load crispy_forms_tags %}
 
 {% block title %}{{ influencer.user.get_full_name|default:influencer.user.username }} - MicroInfluencer{% endblock %}
 
 {% block extra_css %}
 <style>
-    .profile-header {
-        background: linear-gradient(135deg, var(--ig-primary) 0%, var(--ig-secondary) 100%);
-        padding: 3rem;
+    /* Header Styles */
+    .mi-profile-header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        color: var(--surface-color);
+        padding: 4rem 3rem;
         border-radius: 1rem;
-        color: white;
         margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(37, 99, 235, 0.2);
+        position: relative;
+        overflow: hidden;
     }
 
-    .profile-info h1 {
-        margin-bottom: 1rem;
+    .mi-profile-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+        backdrop-filter: blur(10px);
+        pointer-events: none;
     }
 
-    .profile-stats {
-        display: flex;
-        gap: 2rem;
-        margin-top: 1rem;
+    .mi-profile-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        color: var(--surface-color);
+        position: relative;
     }
 
-    .stat {
+    .mi-profile-bio {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        max-width: 800px;
+        margin-bottom: 2rem;
+        color: var(--surface-color);
+        position: relative;
+    }
+
+    .mi-profile-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+        position: relative;
+    }
+
+    .mi-stat-item {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        padding: 1.5rem;
+        border-radius: 0.5rem;
         display: flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: 1rem;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.2);
     }
 
-    .section-title {
+    .mi-stat-item:hover {
+        transform: translateY(-4px);
+        background: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .mi-stat-item i {
+        font-size: 1.5rem;
+        color: var(--surface-color);
+        opacity: 0.9;
+    }
+
+    .mi-stat-item span {
+        font-size: 1.1rem;
+        color: var(--surface-color);
+    }
+
+    .mi-stat-item a {
+        color: var(--surface-color);
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .mi-stat-item a:hover {
+        opacity: 0.8;
+        text-decoration: underline;
+    }
+
+    /* Section Styles */
+    .mi-section {
+        background: var(--surface-color);
+        border-radius: 1rem;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-color);
+    }
+
+    .mi-section-title {
+        font-size: 1.8rem;
+        font-weight: 600;
         color: var(--text-primary);
         margin-bottom: 1.5rem;
-        font-weight: 600;
+        position: relative;
+        padding-bottom: 0.5rem;
     }
 
-    .project-card {
-        background: var(--card-bg);
+    .mi-section-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 60px;
+        height: 4px;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        border-radius: 2px;
+    }
+
+    /* Project Card Styles */
+    .mi-project-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .mi-project-card {
+        background: var(--surface-color);
         border-radius: 1rem;
         overflow: hidden;
-        box-shadow: var(--card-shadow);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
         height: 100%;
         display: flex;
         flex-direction: column;
+        border: 1px solid var(--border-color);
     }
 
-    .card-header {
-        background: var(--background-color);
+    .mi-project-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .mi-project-header {
+        background: var(--surface-color);
         padding: 1.5rem;
         border-bottom: 1px solid var(--border-color);
         display: flex;
@@ -55,63 +158,108 @@
         align-items: start;
     }
 
-    .project-title {
+    .mi-project-title {
         font-size: 1.25rem;
-        margin: 0;
+        font-weight: 600;
         color: var(--text-primary);
+        margin: 0;
     }
 
-    .card-body {
+    .mi-project-body {
         padding: 1.5rem;
         flex: 1;
         display: flex;
         flex-direction: column;
     }
 
-    .project-description {
-        color: var(--text-secondary);
-        margin-bottom: 1rem;
-    }
-
-    .project-meta {
+    .mi-project-meta {
         display: flex;
         flex-wrap: wrap;
         gap: 1rem;
-        margin-bottom: 1rem;
+        margin-bottom: 1.5rem;
         color: var(--text-secondary);
     }
 
-    .project-meta span {
+    .mi-project-meta span {
         display: flex;
         align-items: center;
         gap: 0.5rem;
     }
 
-    .status-badge {
+    .mi-status-badge {
         padding: 0.5rem 1rem;
         border-radius: 2rem;
         font-size: 0.875rem;
         font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
     }
 
     .badge-pending {
         background: var(--warning-color);
-        color: var(--text-primary);
+        color: #000;
     }
 
     .badge-approved, .badge-in_progress {
         background: var(--success-color);
-        color: white;
+        color: #fff;
     }
 
     .badge-completed {
-        background: var(--ig-primary);
-        color: white;
+        background: var(--info-color);
+        color: #fff;
     }
 
     .badge-rejected, .badge-cancelled {
         background: var(--danger-color);
-        color: white;
+        color: #fff;
+    }
+
+    .mi-btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        border: none;
+    }
+
+    .mi-btn-primary {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        color: #fff;
+    }
+
+    .mi-btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        color: #fff;
+        opacity: 0.95;
+    }
+
+    @media (max-width: 768px) {
+        .mi-profile-header {
+            padding: 2rem 1.5rem;
+        }
+
+        .mi-profile-title {
+            font-size: 2rem;
+        }
+
+        .mi-profile-stats {
+            grid-template-columns: 1fr;
+        }
+
+        .mi-project-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .mi-project-meta {
+            flex-direction: column;
+        }
     }
 </style>
 {% endblock %}
@@ -119,114 +267,165 @@
 {% block content %}
 <div class="container py-5">
     <!-- Profile Header -->
-    <div class="profile-header mb-5">
-        <div class="profile-info">
-            <h1 class="display-4">{{ influencer.user.get_full_name }}</h1>
-            <p class="lead text-muted">{{ influencer.bio }}</p>
-            <div class="profile-stats">
-                <div class="stat">
-                    <i class="fas fa-users"></i>
-                    <span>{{ influencer.follower_count }} Followers</span>
-                </div>
-                <div class="stat">
-                    <i class="fas fa-hashtag"></i>
-                    <span>{{ influencer.niche }}</span>
-                </div>
+    <div class="mi-profile-header">
+        <h1 class="mi-profile-title">{{ influencer.user.get_full_name }}</h1>
+        <p class="mi-profile-bio">{{ influencer.bio }}</p>
+        <div class="mi-profile-stats">
+            <div class="mi-stat-item">
+                <i class="fas fa-users"></i>
+                <span>{{ influencer.follower_count }} Followers</span>
             </div>
+            <div class="mi-stat-item">
+                <i class="fas fa-hashtag"></i>
+                <span>{{ influencer.niche }}</span>
+            </div>
+            <div class="mi-stat-item">
+                <i class="fas fa-chart-line"></i>
+                <span>{{ influencer.engagement_rate }}% Engagement Rate</span>
+            </div>
+            <div class="mi-stat-item">
+                <i class="fas fa-globe"></i>
+                <span>{{ influencer.platform }}</span>
+            </div>
+            {% if influencer.instagram_handle %}
+            <div class="mi-stat-item">
+                <i class="fab fa-instagram"></i>
+                <span><a href="https://instagram.com/{{ influencer.instagram_handle }}" target="_blank">{{ influencer.instagram_handle }}</a></span>
+            </div>
+            {% endif %}
+            {% if influencer.tiktok_handle %}
+            <div class="mi-stat-item">
+                <i class="fab fa-tiktok"></i>
+                <span><a href="https://tiktok.com/@{{ influencer.tiktok_handle }}" target="_blank">{{ influencer.tiktok_handle }}</a></span>
+            </div>
+            {% endif %}
+            {% if influencer.youtube_channel %}
+            <div class="mi-stat-item">
+                <i class="fab fa-youtube"></i>
+                <span><a href="{{ influencer.youtube_channel }}" target="_blank">YouTube Channel</a></span>
+            </div>
+            {% endif %}
         </div>
     </div>
 
     <!-- Active Projects Section -->
-    <section class="projects-section mb-5">
-        <h2 class="section-title">Proyek Aktif</h2>
+    <div class="mi-section">
+        <h2 class="mi-section-title">Proyek Aktif</h2>
         {% if active_projects %}
-            <div class="row">
-                {% for collab in active_projects %}
-                    <div class="col-md-6 mb-4">
-                        <div class="project-card">
-                            <div class="card-header">
-                                <h3 class="project-title">{{ collab.project.title }}</h3>
-                                <span class="status-badge badge-{{ collab.status|lower }}">
-                                    {{ collab.get_status_display }}
-                                </span>
-                            </div>
-                            <div class="card-body">
-                                <p class="project-description">{{ collab.project.description|truncatewords:30 }}</p>
-                                <div class="project-meta">
-                                    <span><i class="fas fa-calendar"></i> Deadline: {{ collab.project.deadline|date }}</span>
-                                    <span><i class="fas fa-dollar-sign"></i> Budget: {{ collab.project.budget }}</span>
-                                </div>
-                                <a href="{% url 'project_detail' collab.project.pk %}" class="btn btn-primary mt-3">View Project</a>
-                            </div>
-                        </div>
+        <div class="mi-project-grid">
+            {% for collab in active_projects %}
+            <div class="mi-project-card">
+                <div class="mi-project-header">
+                    <h3 class="mi-project-title">{{ collab.project.title }}</h3>
+                    <span class="mi-status-badge badge-{{ collab.status|lower }}">
+                        {{ collab.get_status_display }}
+                    </span>
+                </div>
+                <div class="mi-project-body">
+                    <div class="mi-project-meta">
+                        <span><i class="fas fa-calendar"></i> Deadline: {{ collab.project.deadline|date }}</span>
+                        <span><i class="fas fa-dollar-sign"></i> Budget: {{ collab.project.budget }}</span>
                     </div>
-                {% endfor %}
+                    <a href="{% url 'collaboration_detail' collab.pk %}" class="mi-btn mi-btn-primary mt-auto">
+                        <i class="fas fa-comments"></i>Lihat Interaksi
+                    </a>
+                </div>
             </div>
+            {% endfor %}
+        </div>
         {% else %}
-            <p class="text-muted">Tidak ada proyek aktif saat ini.</p>
+        <p class="text-muted">Tidak ada proyek aktif saat ini.</p>
         {% endif %}
-    </section>
+    </div>
 
     <!-- Pending Projects Section -->
-    <section class="projects-section mb-5">
-        <h2 class="section-title">Menunggu Persetujuan</h2>
+    <div class="mi-section">
+        <h2 class="mi-section-title">Proyek Menunggu</h2>
         {% if pending_projects %}
-            <div class="row">
-                {% for collab in pending_projects %}
-                    <div class="col-md-6 mb-4">
-                        <div class="project-card">
-                            <div class="card-header">
-                                <h3 class="project-title">{{ collab.project.title }}</h3>
-                                <span class="status-badge badge-pending">
-                                    {{ collab.get_status_display }}
-                                </span>
-                            </div>
-                            <div class="card-body">
-                                <p class="project-description">{{ collab.project.description|truncatewords:30 }}</p>
-                                <div class="project-meta">
-                                    <span><i class="fas fa-calendar"></i> Applied: {{ collab.created_at|date }}</span>
-                                    <span><i class="fas fa-dollar-sign"></i> Budget: {{ collab.project.budget }}</span>
-                                </div>
-                                <a href="{% url 'project_detail' collab.project.pk %}" class="btn btn-primary mt-3">View Project</a>
-                            </div>
-                        </div>
+        <div class="mi-project-grid">
+            {% for collab in pending_projects %}
+            <div class="mi-project-card">
+                <div class="mi-project-header">
+                    <h3 class="mi-project-title">{{ collab.project.title }}</h3>
+                    <span class="mi-status-badge badge-pending">
+                        {{ collab.get_status_display }}
+                    </span>
+                </div>
+                <div class="mi-project-body">
+                    <div class="mi-project-meta">
+                        <span><i class="fas fa-calendar"></i> Deadline: {{ collab.project.deadline|date }}</span>
+                        <span><i class="fas fa-dollar-sign"></i> Budget: {{ collab.project.budget }}</span>
                     </div>
-                {% endfor %}
+                    <a href="{% url 'project_detail' collab.project.pk %}" class="mi-btn mi-btn-primary mt-auto">
+                        <i class="fas fa-eye"></i>Lihat Project
+                    </a>
+                </div>
             </div>
+            {% endfor %}
+        </div>
         {% else %}
-            <p class="text-muted">Tidak ada proyek yang menunggu persetujuan.</p>
+        <p class="text-muted">Tidak ada proyek yang menunggu persetujuan.</p>
         {% endif %}
-    </section>
+    </div>
 
     <!-- Completed Projects Section -->
-    <section class="projects-section mb-5">
-        <h2 class="section-title">Proyek Selesai</h2>
+    <div class="mi-section">
+        <h2 class="mi-section-title">Proyek Selesai</h2>
         {% if completed_projects %}
-            <div class="row">
-                {% for collab in completed_projects %}
-                    <div class="col-md-6 mb-4">
-                        <div class="project-card">
-                            <div class="card-header">
-                                <h3 class="project-title">{{ collab.project.title }}</h3>
-                                <span class="status-badge badge-completed">
-                                    {{ collab.get_status_display }}
-                                </span>
-                            </div>
-                            <div class="card-body">
-                                <p class="project-description">{{ collab.project.description|truncatewords:30 }}</p>
-                                <div class="project-meta">
-                                    <span><i class="fas fa-calendar-check"></i> Completed: {{ collab.completed_at|date }}</span>
-                                    <span><i class="fas fa-dollar-sign"></i> Budget: {{ collab.project.budget }}</span>
-                                </div>
-                                <a href="{% url 'project_detail' collab.project.pk %}" class="btn btn-primary mt-3">View Project</a>
-                            </div>
-                        </div>
+        <div class="mi-project-grid">
+            {% for collab in completed_projects %}
+            <div class="mi-project-card">
+                <div class="mi-project-header">
+                    <h3 class="mi-project-title">{{ collab.project.title }}</h3>
+                    <span class="mi-status-badge badge-completed">
+                        {{ collab.get_status_display }}
+                    </span>
+                </div>
+                <div class="mi-project-body">
+                    <div class="mi-project-meta">
+                        <span><i class="fas fa-calendar-check"></i> Selesai: {{ collab.completed_at|date }}</span>
+                        <span><i class="fas fa-dollar-sign"></i> Budget: {{ collab.project.budget }}</span>
                     </div>
-                {% endfor %}
+                    <a href="{% url 'collaboration_detail' collab.pk %}" class="mi-btn mi-btn-primary mt-auto">
+                        <i class="fas fa-comments"></i>Lihat Interaksi
+                    </a>
+                </div>
             </div>
+            {% endfor %}
+        </div>
         {% else %}
-            <p class="text-muted">Belum ada proyek yang selesai.</p>
+        <p class="text-muted">Belum ada proyek yang selesai.</p>
         {% endif %}
-    </section>
+    </div>
+
+    <!-- Cancelled Projects Section -->
+    <div class="mi-section">
+        <h2 class="mi-section-title">Proyek Dibatalkan</h2>
+        {% if cancelled_projects %}
+        <div class="mi-project-grid">
+            {% for collab in cancelled_projects %}
+            <div class="mi-project-card">
+                <div class="mi-project-header">
+                    <h3 class="mi-project-title">{{ collab.project.title }}</h3>
+                    <span class="mi-status-badge badge-cancelled">
+                        {{ collab.get_status_display }}
+                    </span>
+                </div>
+                <div class="mi-project-body">
+                    <div class="mi-project-meta">
+                        <span><i class="fas fa-calendar-times"></i> Dibatalkan: {{ collab.updated_at|date }}</span>
+                        <span><i class="fas fa-dollar-sign"></i> Budget: {{ collab.project.budget }}</span>
+                    </div>
+                    <a href="{% url 'project_detail' collab.project.pk %}" class="mi-btn mi-btn-primary mt-auto">
+                        <i class="fas fa-eye"></i>Lihat Project
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-muted">Tidak ada proyek yang dibatalkan.</p>
+        {% endif %}
+    </div>
 </div>
-{% endblock %} 
+{% endblock %}

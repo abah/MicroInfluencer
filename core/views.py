@@ -4,11 +4,14 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.db.models import Q, Count
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, HttpResponse
 from django.views.generic import CreateView, ListView, DetailView, UpdateView
 from django.utils import timezone
+from django.core.exceptions import PermissionDenied, ValidationError
+from django import forms
+import logging
 
-from .models import User, InfluencerProfile, AdvertiserProfile, Project, Collaboration
+from .models import User, InfluencerProfile, AdvertiserProfile, Project, Collaboration, ProjectUpdate
 from .forms import (
     SignUpForm,
     InfluencerProfileForm,
@@ -16,8 +19,11 @@ from .forms import (
     ProjectForm,
     CollaborationForm,
     ProjectSearchForm,
-    InfluencerSearchForm
+    InfluencerSearchForm,
+    ProjectUpdateForm
 )
+
+logger = logging.getLogger(__name__)
 
 def home(request):
     context = {
@@ -132,28 +138,30 @@ class InfluencerDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
-        # Get all collaborations for this influencer with related project data
-        collaborations = Collaboration.objects.filter(
+        # Get base queryset for collaborations
+        base_qs = Collaboration.objects.filter(
             influencer=self.object.user
         ).select_related('project').order_by('-updated_at')
         
-        # Group collaborations by status
-        context['active_projects'] = [
-            collab for collab in collaborations 
-            if collab.status in ['APPROVED', 'IN_PROGRESS']
-        ]
-        context['pending_projects'] = [
-            collab for collab in collaborations 
-            if collab.status == 'PENDING'
-        ]
-        context['completed_projects'] = [
-            collab for collab in collaborations 
-            if collab.status == 'COMPLETED'
-        ]
-        context['cancelled_projects'] = [
-            collab for collab in collaborations 
-            if collab.status in ['REJECTED', 'CANCELLED']
-        ]
+        # Get collaborations by status using database queries
+        context['active_projects'] = base_qs.filter(
+            status__in=['APPROVED', 'IN_PROGRESS']
+        )
+        
+        context['pending_projects'] = base_qs.filter(
+            status='PENDING'
+        )
+        
+        context['completed_projects'] = base_qs.filter(
+            status='COMPLETED'
+        )
+        
+        context['cancelled_projects'] = base_qs.filter(
+            status__in=['REJECTED', 'CANCELLED']
+        )
+        
+        # Add cache-busting timestamp
+        context['timestamp'] = timezone.now().timestamp()
         
         return context
 
@@ -226,29 +234,40 @@ class ProjectDetailView(DetailView):
     template_name = 'core/project_detail.html'
     context_object_name = 'project'
 
+    def get_queryset(self):
+        # Ensure we get all related data
+        return Project.objects.select_related(
+            'advertiser',
+            'advertiser__advertiser_profile'
+        ).prefetch_related('collaborations')
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        project = self.get_object()
+        
+        # Add project status context
+        context['is_pending'] = project.status == 'PENDING'
+        context['is_active'] = project.status in ['APPROVED', 'IN_PROGRESS']
+        context['is_completed'] = project.status == 'COMPLETED'
+        
         if self.request.user.is_authenticated:
-            # Ambil kolaborasi user saat ini dengan select_related untuk optimasi
-            context['user_collaboration'] = Collaboration.objects.filter(
-                project=self.object,
-                influencer=self.request.user
-            ).select_related('influencer').first()
+            # Add user-specific context
+            context['is_owner'] = self.request.user == project.advertiser
+            context['is_influencer'] = self.request.user.role == 'INFLUENCER'
             
-            # Jika user adalah advertiser
-            if self.request.user == self.object.advertiser:
-                collaborations = self.object.collaborations.select_related('influencer').order_by('-updated_at')
-                context['collaborations'] = collaborations
-                context['pending_collaborations'] = [c for c in collaborations if c.status == 'PENDING']
-                context['active_collaborations'] = [c for c in collaborations if c.status in ['APPROVED', 'IN_PROGRESS']]
-                context['completed_collaborations'] = [c for c in collaborations if c.status == 'COMPLETED']
-                context['rejected_collaborations'] = [c for c in collaborations if c.status in ['REJECTED', 'CANCELLED']]
-            # Jika user adalah influencer yang sudah diterima
-            elif context['user_collaboration'] and context['user_collaboration'].status in ['APPROVED', 'IN_PROGRESS', 'COMPLETED']:
-                context['collaborations'] = [context['user_collaboration']]
-            # Jika user adalah influencer lain atau belum diterima
-            else:
-                context['collaborations'] = []
+            if context['is_influencer']:
+                # Get user's collaboration if exists
+                context['user_collaboration'] = Collaboration.objects.filter(
+                    project=project,
+                    influencer=self.request.user
+                ).select_related('project').first()
+            
+            # Get all collaborations for the project if user is the owner
+            if context['is_owner']:
+                context['collaborations'] = project.collaborations.select_related(
+                    'influencer',
+                    'influencer__influencer_profile'
+                ).order_by('-created_at')
         
         return context
 
@@ -327,10 +346,19 @@ def apply_project(request, pk):
 
 @login_required
 def update_collaboration_status(request, pk, status):
+    # Add cache control headers
+    response = HttpResponse()
+    response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response['Pragma'] = 'no-cache'
+    response['Expires'] = '0'
+    
     collaboration = get_object_or_404(Collaboration, pk=pk)
     project = collaboration.project
     
+    logger.info(f'Attempting to update collaboration {pk} status from {collaboration.status} to {status}')
+    
     if request.user != project.advertiser:
+        logger.warning(f'User {request.user.id} attempted to update collaboration {pk} but is not the project owner')
         messages.error(request, 'Only the project owner can update collaboration status.')
         return redirect('project_detail', pk=project.pk)
     
@@ -342,30 +370,38 @@ def update_collaboration_status(request, pk, status):
     
     current_status = collaboration.status
     if status not in valid_transitions.get(current_status, []):
+        logger.warning(f'Invalid status transition attempted from {current_status} to {status}')
         messages.error(request, f'Invalid status transition from {current_status} to {status}.')
         return redirect('project_detail', pk=project.pk)
     
-    collaboration.status = status
-    if status == 'COMPLETED':
-        collaboration.completed_at = timezone.now()
-    collaboration.save()
-    
-    status_messages = {
-        'APPROVED': 'Application approved! The influencer has been notified.',
-        'REJECTED': 'Application rejected.',
-        'IN_PROGRESS': 'Collaboration marked as in progress.',
-        'COMPLETED': 'Collaboration marked as completed.',
-        'CANCELLED': 'Collaboration has been cancelled.',
-    }
-    messages.success(request, status_messages[status])
-    
-    if status == 'APPROVED':
-        project.status = 'IN_PROGRESS'
-        project.save()
-    elif status == 'COMPLETED':
-        if not project.collaborations.exclude(status='COMPLETED').exists():
-            project.status = 'COMPLETED'
+    try:
+        collaboration.status = status
+        if status == 'COMPLETED':
+            collaboration.completed_at = timezone.now()
+        collaboration.save()
+        logger.info(f'Successfully updated collaboration {pk} status to {status}')
+        
+        status_messages = {
+            'APPROVED': 'Application approved! The influencer has been notified.',
+            'REJECTED': 'Application rejected.',
+            'IN_PROGRESS': 'Collaboration marked as in progress.',
+            'COMPLETED': 'Collaboration marked as completed.',
+            'CANCELLED': 'Collaboration has been cancelled.',
+        }
+        messages.success(request, status_messages[status])
+        
+        if status == 'APPROVED':
+            project.status = 'IN_PROGRESS'
             project.save()
+            logger.info(f'Updated project {project.pk} status to IN_PROGRESS')
+        elif status == 'COMPLETED':
+            if not project.collaborations.exclude(status='COMPLETED').exists():
+                project.status = 'COMPLETED'
+                project.save()
+                logger.info(f'Updated project {project.pk} status to COMPLETED')
+    except Exception as e:
+        logger.error(f'Error updating collaboration {pk} status: {str(e)}')
+        messages.error(request, f'Error updating status: {str(e)}')
     
     return redirect('project_detail', pk=project.pk)
 
@@ -392,3 +428,76 @@ class CollaborationDetailView(LoginRequiredMixin, DetailView):
             return queryset.filter(influencer=self.request.user)
         else:
             return queryset.filter(project__advertiser=self.request.user)
+
+@login_required
+def collaboration_detail(request, collaboration_id):
+    # Get collaboration with all related data
+    collaboration = get_object_or_404(
+        Collaboration.objects.select_related(
+            'project',
+            'project__advertiser',
+            'project__advertiser__advertiser_profile',
+            'influencer',
+            'influencer__influencer_profile'
+        ),
+        id=collaboration_id
+    )
+    
+    # Check if user has permission to view this collaboration
+    is_participant = (
+        request.user == collaboration.influencer or 
+        request.user == collaboration.project.advertiser
+    )
+    
+    if not is_participant:
+        raise PermissionDenied("You don't have permission to access this collaboration.")
+    
+    # Handle form submission
+    if request.method == 'POST':
+        try:
+            form = ProjectUpdateForm(
+                data=request.POST,
+                user=request.user,
+                collaboration=collaboration
+            )
+            
+            if form.is_valid():
+                try:
+                    form.save()
+                    messages.success(request, 'Update posted successfully!')
+                    return redirect('collaboration_detail', collaboration_id=collaboration_id)
+                except ValidationError as e:
+                    messages.error(request, str(e))
+            else:
+                for field, errors in form.errors.items():
+                    messages.error(request, f"{field}: {', '.join(errors)}")
+        except Exception as e:
+            messages.error(request, f"Error creating update: {str(e)}")
+    else:
+        # Initialize empty form for GET request
+        form = ProjectUpdateForm(
+            user=request.user,
+            collaboration=collaboration
+        ) if is_participant else None
+
+    # Get updates for this collaboration
+    updates = ProjectUpdate.objects.filter(
+        collaboration=collaboration
+    ).select_related(
+        'sender',
+        'sender__advertiser_profile',
+        'sender__influencer_profile'
+    ).order_by('-created_at')
+    
+    context = {
+        'collaboration': collaboration,
+        'project': collaboration.project,
+        'form': form,
+        'updates': updates,
+        'can_update': is_participant,
+        'is_advertiser': request.user == collaboration.project.advertiser,
+        'is_influencer': request.user == collaboration.influencer,
+        'update_count': updates.count()
+    }
+    
+    return render(request, 'core/collaboration_detail.html', context)

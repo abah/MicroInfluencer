@@ -1,0 +1,367 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load project_filters %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ project.title }} - MicroInfluencer{% endblock %}
+
+{% block extra_css %}
+<style>
+    .mi-project-header {
+        background: linear-gradient(135deg, #405de6 0%, #5851db 100%);
+        color: white;
+        padding: 4rem 3rem;
+        border-radius: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(64, 93, 230, 0.2);
+    }
+
+    .mi-project-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+    }
+
+    .mi-project-info {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+
+    .mi-project-info-item {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 1rem;
+        border-radius: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .mi-section {
+        background: white;
+        border-radius: 1rem;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .mi-section-title {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin-bottom: 1.5rem;
+    }
+
+    .mi-collaboration-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .mi-collab-card {
+        background: white;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        border: 1px solid #eaeaea;
+    }
+
+    .badge {
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+    }
+
+    .bg-pending { background-color: #ffc107; }
+    .bg-approved { background-color: #28a745; }
+    .bg-in_progress { background-color: #007bff; }
+    .bg-completed { background-color: #198754; }
+    .bg-rejected { background-color: #dc3545; }
+    .bg-cancelled { background-color: #6c757d; }
+
+    /* CTA Section Styles */
+    .cta-container {
+        padding: 3rem 2rem;
+        max-width: 600px;
+        margin: 0 auto;
+        background: linear-gradient(135deg, rgba(64, 93, 230, 0.05) 0%, rgba(88, 81, 219, 0.05) 100%);
+        border-radius: 2rem;
+    }
+
+    .cta-icon {
+        font-size: 4.5rem;
+        color: #405de6;
+        margin-bottom: 1.5rem;
+        animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0px); }
+    }
+
+    .cta-title {
+        font-size: 2.4rem;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin-bottom: 1.2rem;
+        background: linear-gradient(135deg, #405de6 0%, #5851db 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .cta-description {
+        font-size: 1.2rem;
+        color: #4a4a4a;
+        line-height: 1.7;
+        margin-bottom: 2.5rem;
+        max-width: 480px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .cta-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .cta-buttons .btn {
+        padding: 1rem 2.5rem;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        border-radius: 1rem;
+    }
+
+    .cta-buttons .btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(64, 93, 230, 0.3);
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #405de6 0%, #5851db 100%);
+        border: none;
+        color: white;
+    }
+
+    .btn-outline-primary {
+        border: 2px solid #405de6;
+        color: #405de6;
+        background: white;
+    }
+
+    .btn-outline-primary:hover {
+        background: linear-gradient(135deg, #405de6 0%, #5851db 100%);
+        border-color: transparent;
+        color: white;
+    }
+
+    @media (max-width: 768px) {
+        .cta-container {
+            padding: 2rem 1.5rem;
+        }
+
+        .cta-title {
+            font-size: 2rem;
+        }
+
+        .cta-description {
+            font-size: 1.1rem;
+        }
+
+        .cta-buttons {
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .cta-buttons .btn {
+            width: 100%;
+            margin: 0.5rem 0;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Project Header -->
+    <div class="mi-project-header">
+        <h1 class="mi-project-title">{{ project.title }}</h1>
+        <div class="mi-project-info">
+            <div class="mi-project-info-item">
+                <i class="fas fa-user"></i>
+                <span>{{ project.advertiser.get_full_name }}</span>
+            </div>
+            <div class="mi-project-info-item">
+                <i class="fas fa-dollar-sign"></i>
+                <span>Budget: Rp{{ project.budget }}</span>
+            </div>
+            <div class="mi-project-info-item">
+                <i class="fas fa-calendar"></i>
+                <span>Deadline: {{ project.deadline|date:"d M Y" }}</span>
+            </div>
+            <div class="mi-project-info-item">
+                <i class="fas fa-info-circle"></i>
+                <span>Status: {{ project.get_status_display }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Project Description -->
+    <div class="mi-section">
+        <h2 class="mi-section-title">Deskripsi Project</h2>
+        <p>{{ project.description|linebreaks }}</p>
+    </div>
+
+    <!-- Project Requirements -->
+    <div class="mi-section">
+        <h2 class="mi-section-title">Persyaratan</h2>
+        <p>{{ project.requirements|linebreaks }}</p>
+    </div>
+
+    {% if user.is_authenticated %}
+        {% if is_owner %}
+            <!-- Project Management Section for Advertiser -->
+            <div class="mi-section">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="mi-section-title mb-0">Daftar Kolaborasi</h2>
+                    <div>
+                        <a href="{% url 'project_edit' project.pk %}" class="btn btn-primary">
+                            <i class="fas fa-edit me-2"></i>Edit Project
+                        </a>
+                    </div>
+                </div>
+
+                {% if collaborations %}
+                    <div class="mi-collaboration-grid">
+                        {% for collab in collaborations %}
+                            <div class="mi-collab-card">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div>
+                                        <h5 class="mb-1">{{ collab.influencer.get_full_name }}</h5>
+                                        <p class="text-muted mb-2">
+                                            <small>
+                                                <i class="far fa-calendar me-2"></i>Applied: {{ collab.created_at|date }}
+                                            </small>
+                                        </p>
+                                    </div>
+                                    <span class="badge bg-{{ collab.status|lower }}">
+                                        {{ collab.get_status_display }}
+                                    </span>
+                                </div>
+
+                                <div class="d-flex gap-2 flex-wrap">
+                                    {% if collab.status == 'PENDING' %}
+                                        <form method="post" action="{% url 'update_collaboration_status' collab.pk 'APPROVED' %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-success btn-sm">
+                                                <i class="fas fa-check me-1"></i>Terima
+                                            </button>
+                                        </form>
+                                        <form method="post" action="{% url 'update_collaboration_status' collab.pk 'REJECTED' %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-danger btn-sm">
+                                                <i class="fas fa-times me-1"></i>Tolak
+                                            </button>
+                                        </form>
+                                    {% endif %}
+
+                                    {% if collab.status == 'APPROVED' %}
+                                        <form method="post" action="{% url 'update_collaboration_status' collab.pk 'IN_PROGRESS' %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-primary btn-sm">
+                                                <i class="fas fa-play me-1"></i>Mulai
+                                            </button>
+                                        </form>
+                                    {% endif %}
+
+                                    {% if collab.status == 'IN_PROGRESS' %}
+                                        <form method="post" action="{% url 'update_collaboration_status' collab.pk 'COMPLETED' %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-success btn-sm">
+                                                <i class="fas fa-check-double me-1"></i>Selesai
+                                            </button>
+                                        </form>
+                                        <form method="post" action="{% url 'update_collaboration_status' collab.pk 'CANCELLED' %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-danger btn-sm">
+                                                <i class="fas fa-ban me-1"></i>Batalkan
+                                            </button>
+                                        </form>
+                                    {% endif %}
+
+                                    {% if collab.status in 'APPROVED,IN_PROGRESS,COMPLETED' %}
+                                        <a href="{% url 'collaboration_detail' collab.pk %}" class="btn btn-info btn-sm">
+                                            <i class="fas fa-comments me-1"></i>Lihat Interaksi
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>Belum ada influencer yang mengajukan kolaborasi.
+                    </div>
+                {% endif %}
+            </div>
+        {% elif is_influencer %}
+            <!-- Influencer Actions Section -->
+            <div class="mi-section">
+                {% if user_collaboration %}
+                    <div class="mi-collab-card">
+                        <h3 class="mb-3">Status Kolaborasi Anda</h3>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <span class="badge bg-{{ user_collaboration.status|lower }} mb-2">
+                                    {{ user_collaboration.get_status_display }}
+                                </span>
+                                <p class="text-muted mb-0">
+                                    <small>Diajukan pada: {{ user_collaboration.created_at|date:"d M Y" }}</small>
+                                </p>
+                            </div>
+                            {% if user_collaboration.status in 'APPROVED,IN_PROGRESS,COMPLETED' %}
+                                <a href="{% url 'collaboration_detail' user_collaboration.pk %}" class="btn btn-primary">
+                                    <i class="fas fa-comments me-2"></i>Lihat Interaksi
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% else %}
+                    {% if project.status == 'PENDING' %}
+                        <div class="text-center">
+                            <h3 class="mb-3">Tertarik dengan project ini?</h3>
+                            <a href="{% url 'apply_project' project.pk %}" class="btn btn-primary btn-lg">
+                                <i class="fas fa-handshake me-2"></i>Ajukan Kolaborasi
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>Project ini sudah tidak menerima pengajuan baru.
+                        </div>
+                    {% endif %}
+                {% endif %}
+            </div>
+        {% endif %}
+    {% else %}
+        <!-- Call to Action for Non-authenticated Users -->
+        <div class="mi-section">
+            <div class="cta-container">
+                <i class="fas fa-handshake cta-icon"></i>
+                <h3 class="cta-title">Tertarik dengan Project Ini?</h3>
+                <p class="cta-description">Bergabunglah dengan MicroInfluencer untuk berkolaborasi dengan brand-brand ternama dan dapatkan project menarik!</p>
+                <div class="cta-buttons">
+                    <a href="{% url 'account_login' %}" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt me-2"></i>Login
+                    </a>
+                    <a href="{% url 'account_signup' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-user-plus me-2"></i>Daftar Sekarang
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %} 

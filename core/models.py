@@ -3,6 +3,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import MinValueValidator, RegexValidator
 from django.utils import timezone
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 
 class User(AbstractUser):
     class Role(models.TextChoices):
@@ -324,3 +325,84 @@ class Collaboration(models.Model):
                 self.project.save(update_fields=['status', 'updated_at'])
         
         super().save(*args, **kwargs)
+
+class ProjectUpdate(models.Model):
+    UPDATE_TYPE_CHOICES = [
+        ('BRIEF', 'Brief'),
+        ('PROGRESS', 'Progress Update'),
+        ('REVISION', 'Revision Request'),
+        ('FEEDBACK', 'Feedback'),
+    ]
+    
+    collaboration = models.ForeignKey(
+        Collaboration, 
+        on_delete=models.CASCADE, 
+        related_name='updates'
+    )
+    sender = models.ForeignKey(
+        User, 
+        on_delete=models.CASCADE,
+        related_name='sent_updates'
+    )
+    update_type = models.CharField(
+        max_length=20, 
+        choices=UPDATE_TYPE_CHOICES
+    )
+    content = models.TextField()
+    attachment_url = models.URLField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['collaboration', '-created_at']),
+            models.Index(fields=['sender', '-created_at']),
+        ]
+
+    def __str__(self):
+        return f"{self.get_update_type_display()} by {self.sender.get_full_name()}"
+
+    def clean(self):
+        if not self.sender_id:
+            raise ValidationError({
+                'sender': 'Sender is required.'
+            })
+            
+        if not self.collaboration_id:
+            raise ValidationError({
+                'collaboration': 'Collaboration is required.'
+            })
+
+        # Validate sender's role and permissions
+        if self.sender.role == User.Role.ADVERTISER:
+            if self.sender != self.collaboration.project.advertiser:
+                raise ValidationError({
+                    'sender': 'Only the project advertiser can send this update.'
+                })
+            if self.update_type not in ['BRIEF', 'REVISION', 'FEEDBACK']:
+                raise ValidationError({
+                    'update_type': 'Advertisers can only send briefs, revision requests, and feedback.'
+                })
+        elif self.sender.role == User.Role.INFLUENCER:
+            if self.sender != self.collaboration.influencer:
+                raise ValidationError({
+                    'sender': 'Only the assigned influencer can send this update.'
+                })
+            if self.update_type != 'PROGRESS':
+                raise ValidationError({
+                    'update_type': 'Influencers can only send progress updates.'
+                })
+        else:
+            raise ValidationError({
+                'sender': 'Invalid sender role for project updates.'
+            })
+
+    def get_update_type_color(self):
+        colors = {
+            'BRIEF': 'brief',
+            'PROGRESS': 'progress',
+            'REVISION': 'revision',
+            'FEEDBACK': 'feedback'
+        }
+        return colors.get(self.update_type, '')

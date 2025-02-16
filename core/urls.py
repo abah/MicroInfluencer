@@ -18,8 +18,10 @@ urlpatterns = [
     path('projects/', views.ProjectListView.as_view(), name='project_list'),
     path('projects/<int:pk>/', views.ProjectDetailView.as_view(), name='project_detail'),
     path('projects/new/', views.ProjectCreateView.as_view(), name='project_create'),
+    path('projects/<int:pk>/edit/', views.ProjectUpdateView.as_view(), name='project_edit'),
     path('projects/<int:pk>/apply/', views.apply_project, name='apply_project'),
     
     # Collaboration URLs
     path('collaborations/<int:pk>/<str:status>/', views.update_collaboration_status, name='update_collaboration_status'),
+    path('collaborations/<int:collaboration_id>/', views.collaboration_detail, name='collaboration_detail'),
 ] 
